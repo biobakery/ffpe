@@ -1,42 +1,50 @@
 \name{sortedIqrPlot}
-\alias{sortedIqrPlot}
-%- Also NEED an '\alias' for EACH other topic documented here.
+
 \title{
-%%  ~~function to do ... ~~
+  Minimal box plot of samples, which get ordered optionally by batch,
+  then by IQR.
 }
+
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+  This plots only the 25th to 75th percentile of expression intensities
+  (Interquartile Range), sorted from smallest to largest IQR.  This
+  modification is more readable than a regular boxplot for large sample
+  sizes.  An optional batch variable may be specified, so that the sorting
+  is done within each batch.  
 }
+
 \usage{
 sortedIqrPlot(lumiobj, batchvar = rep(1, ncol(lumiobj)), ...)
 }
 %- maybe also 'usage' for other objects documented here.
+
 \arguments{
   \item{lumiobj}{
-%%     ~~Describe \code{lumiobj} here~~
+    An object of class LumiBatch, AffyBatch, ExpressionSet, or matrix.  This
+    should contain raw, unnormalized, expression intensities.
 }
-  \item{batchvar}{
-%%     ~~Describe \code{batchvar} here~~
+\item{batchvar}{
+  Optional integer batch variable.  If specified, samples will be sorted
+  within batches only.  Default is to assume a single batch for all data.
 }
-  \item{\dots}{
-%%     ~~Describe \code{\dots} here~~
+\item{dolog2}{
+  If TRUE, data will be log2-transformed before plotting.  Default is FALSE.
+}
+\item{\dots}{
+  Optional arguments passed on to the plot() function.
 }
 }
 \details{
-%%  ~~ If necessary, more details than the description above ~~
+  Function produces a plot only.
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+  none
 }
 \references{
 %% ~put references to the literature/web site here ~
 }
 \author{
-%%  ~~who you are~~
+Levi Waldron
 }
 \note{
 %%  ~~further notes~~
@@ -48,28 +56,11 @@ sortedIqrPlot(lumiobj, batchvar = rep(1, ncol(lumiobj)), ...)
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
+library(ffpe)
+load(lumibatch.GSE17565)
+sortedIqrPlot(lumibatch.GSE17565,main="GSE17565")
 
-## The function is currently defined as
-function(lumiobj,batchvar=rep(1,ncol(lumiobj)),...){
-  ##----------------------------------------------------------------------
-  ##----------------------------------------------------------------------
-  ##minimal box plot of samples, which get ordered optionally by batch then IQR.
-  ##----------------------------------------------------------------------
-  ## lumiobj: lumi object or expression matrix, should be log2-transformed already
-  ## batchvar: optional integer batch variable.  If specified, samples will be sorted within batches only.
-  ##----------------------------------------------------------------------
-  if(!length(batchvar)==ncol(lumiobj)) stop("length(batchvar) must be equal to ncol(lumiobj)")
-  if(class(lumiobj)=="LumiBatch" | class(lumiobj)=="expressionSet") lumiobj <- exprs(lumiobj)
-  persample.iqr <- apply(lumiobj,2,quantile,probs=c(0.25,0.75),na.rm=TRUE)
-  persample.iqr <- persample.iqr[,order(batchvar,apply(persample.iqr,2,diff))]
-  plot(1:ncol(persample.iqr),seq(min(persample.iqr),max(persample.iqr),length.out=ncol(persample.iqr)),type='n',...)
-  for (i in 1:ncol(persample.iqr)) segments(x0=i,y0=persample.iqr[1,i],y1=persample.iqr[2,i])
-  }
-}
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+\keyword{hplot}
+
