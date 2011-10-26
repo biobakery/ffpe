@@ -1,331 +1,245 @@
 \name{plotSpearmanvsGroup}
 \alias{plotSpearmanvsGroup}
-%- Also NEED an '\alias' for EACH other topic documented here.
+
 \title{
-%%  ~~function to do ... ~~
+
+  Sample quality control for FFPE expression data
+
 }
+
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+
+  Expression data from FFPE tissues may contain a much larger range of
+  quality than data from fresh-frozen tissues.  This function sorts
+  samples by some specified measure of array quality, Interquartile Range
+  (IQR) by default, and plots the correlation of each sample's expression
+  values against a ``typical'' sample for the study, as a function of the
+  quality measure.  A ``typical'' sample can either be the median
+  pseudochip (default), or a specified number of samples with quality
+  measure most similar to that sample.  An attempt is made to
+  automatically select a threshold for rejection of low-quality samples,
+  at the point of largest negative inflection of a Loess smoothing
+  curve. for this plot.
+
 }
+
 \usage{
-plotSpearmanvsGroup(lumibatch, logtransform = TRUE, goby = 3, xaxis = c("index", "notindex"), QCmeasure = c("IQR", "ndetectedprobes", "MAplot.var"), cor.to = c("similar", "pseudochip"), pseudochip.samples = 1:ncol(lumibatch), detectionTh = 0.01, rankcutoff = NULL, mincor = 0, maxcor = 0.6, below.smoothed.threshold = 1.5, lowess.f = 1/3, labelnote = NULL, pch = 1, lw = 4, linecol = "red", make.legend = TRUE, main.title = NA, ...)
+
+plotSpearmanvsGroup(data.obj,logtransform = TRUE, goby = 3, xaxis = c("index", "notindex"), QCmeasure = c("IQR", "ndetectedprobes"), cor.to = c("similar", "pseudochip"), pseudochip.samples = 1:ncol(data.obj), detectionTh = 0.01, manualcutoff = NULL, mincor = 0, maxcor = 0.8, below.smoothed.threshold = 1.5, lowess.f = 1/3, labelnote = NULL, pch = 1, lw = 4, linecol = "red", make.legend = TRUE, main.title = NA, ...)
+
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
-  \item{lumibatch}{
-%%     ~~Describe \code{lumibatch} here~~
-}
+  
+  \item{data.obj}{
+    
+    A data object of class LumiBatch, AffyBatch, or matrix.  If matrix,
+    the columns should contain samples and the rows probes.  If using
+    QCmeasure="IQR", it is critical that the data not be normalized.
+    QCmeasure="ndetectedprobes" currently works only for LumiBatch
+    objects.
+    
+  }
+  
   \item{logtransform}{
-%%     ~~Describe \code{logtransform} here~~
-}
+    
+    If TRUE, data will be log2-transformed before calculating IQR and
+    correlation.
+    
+  }
   \item{goby}{
-%%     ~~Describe \code{goby} here~~
-}
+    
+    This number of samples above and below each sample will be used to
+    for calculating correlation.  Used only if cor.to="similar".
+    
+  }
+  
   \item{xaxis}{
-%%     ~~Describe \code{xaxis} here~~
-}
+    If "index", the QC measure will be converted to ranks.  This can be
+    useful for very discontinuous values of the QC measure, which
+    interfere with generation of a smoothing line.  If "notindex", the
+    QC measure is used as-is.
+    
+  }
+  
   \item{QCmeasure}{
-%%     ~~Describe \code{QCmeasure} here~~
-}
+    
+    Automated options include "IQR" and "ndetectedprobes" -
+    
+  }
+
   \item{cor.to}{
-%%     ~~Describe \code{cor.to} here~~
-}
+    
+    "similar" to calculate correlation of each chip to neighbors within
+    a sliding window of size 2*goby+1, or "pseudochip" to calculate
+    correlation to a study-wide pseudochip.  The former can be more
+    sensitive, or more appropriate with a large number of failed chips,
+    but does not work well with small sample size (<20).  The default is
+    "pseudochip".
+    
+  }
+  
   \item{pseudochip.samples}{
-%%     ~~Describe \code{pseudochip.samples} here~~
-}
+    
+    An integer vector, specifying the column numbers of samples to use
+    in calculation of the median pseudochip.  Default is to use all
+    samples.
+    
+  }
+  
   \item{detectionTh}{
-%%     ~~Describe \code{detectionTh} here~~
-}
-  \item{rankcutoff}{
-%%     ~~Describe \code{rankcutoff} here~~
-}
+    
+    Nnominal detection p-value to consider a probe as detected or not
+    (0.01 by default).  Used only if QCmeasure="ndetectedprobes" and
+    class(data.obj)=="LumiBatch"
+    
+  }
+  \item{manualcutoff}{
+    
+    Optional manual specification of a cutoff for good and bad samples.
+    If xaxis="index", manualcutoff specifies the number of samples that
+    will be rejected.  If xaxis="notindex", it is the value of the QC
+    measure plotted on the x-axis, below which samples will be rejected.
+    
+  }
+
   \item{mincor}{
-%%     ~~Describe \code{mincor} here~~
-}
+    
+    Optional specification of a minimum correlation to the
+    sliding window samples or median pseudochip, below which all samples
+    will be rejected for QC.  This is drawn as a horizontal line on the
+    output plot.  
+    
+  }
   \item{maxcor}{
-%%     ~~Describe \code{maxcor} here~~
-}
+
+    Optional specification of an upper limit of correlation to sliding
+    window samples or median pseudochip, above which samples will not be
+    considered in determining the QC cutoff.  This can be useful if some
+    structure in the high-quality end of the plot has the maximum
+    downward inflection, causing most samples to be incorrectly
+    rejected.  In such case, specifying maxcor can force the otherwise
+    automatically-determined threshold into a more reasonable region.
+    Only values above at least 0.25, and probably below 0.8, make sense.
+    
+  }
   \item{below.smoothed.threshold}{
-%%     ~~Describe \code{below.smoothed.threshold} here~~
-}
+    
+    Samples falling more than below.smoothed.threshold times the IQR of
+    the residuals will be rejected for low QC.  Large negative residuals
+    from the Loess best-fit line may indicate outlier samples even if
+    that sample has a high IQR or other quality measure.
+    
+  }
+  
   \item{lowess.f}{
-%%     ~~Describe \code{lowess.f} here~~
-}
+    
+    Degree of smoothing of the Loess best-fit line (see ?loess)
+    
+  }
+
   \item{labelnote}{
-%%     ~~Describe \code{labelnote} here~~
-}
+    
+    An optional label for the plot, used only if QCmeasure is a numeric vector.
+    
+  }
+  
   \item{pch}{
-%%     ~~Describe \code{pch} here~~
-}
+    
+    Plotting character to be used for points (see ?par).
+    
+  }
+  
   \item{lw}{
-%%     ~~Describe \code{lw} here~~
-}
+    
+    Line width for Loess curve.
+    
+  }
+  
   \item{linecol}{
-%%     ~~Describe \code{linecol} here~~
-}
+    
+    Line color for Loess curve.
+    
+  }
+  
   \item{make.legend}{
-%%     ~~Describe \code{make.legend} here~~
-}
+    
+    If TRUE, an automatic legend will be added to the plot.
+    
+  }
+  
   \item{main.title}{
-%%     ~~Describe \code{main.title} here~~
-}
+    
+    If specified, this over-rides the automatically-generated title.
+    
+  }
   \item{\dots}{
-%%     ~~Describe \code{\dots} here~~
+    
+    Other arguments passed on to plot().
+    
+  }
+  
 }
-}
+
 \details{
-%%  ~~ If necessary, more details than the description above ~~
+  
+  These methods aid in the identification of low-quality samples from
+  FFPE expression data, when technical replication is not available.
+  
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+
+  If only one method is specified (one value each for xaxis, QCmeasure,
+  and cor.to, the output is a dataframe with the following columns:
+
+  \item{i}{index or QC measure of each sample}
+  \item{spearman}{spearman correlation to sliding window samples or to
+    median pseudochip}
+  \item{movingaverage}{moving average smoothing of spearman correlation}
+  \item{interpolate.i}{evenly spaced QC measure (index or actual QC
+    measure) used for plotting Loess curve}
+  \item{smoothed}{values of the Loess curve}
+  \item{ddy}{second derivative of the Loess curve}
+  \item{rejectQC}{was this sample rejected in the QC process?  logical TRUE or FALSE}
+
+  If more than one method is specified, the output is a list, where each
+  element contains a dataframe of the above description.
+  
 }
+
 \references{
-%% ~put references to the literature/web site here ~
+  
+  %% ~put references to the literature/web site here ~
+  
 }
 \author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
+  
+  Levi Waldron <lwaldron@hsph.harvard.edu>
+  
 }
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
 
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
 
-## The function is currently defined as
-function(lumibatch,
-                                logtransform=TRUE,
-                                goby=3,
-                                xaxis=c("index","notindex"),
-                                QCmeasure=c("IQR","ndetectedprobes","MAplot.var"),
-                                cor.to=c("similar","pseudochip"),
-                                pseudochip.samples=1:ncol(lumibatch),
-                                detectionTh=0.01,
-                                rankcutoff=NULL,
-                                mincor=0,
-                                maxcor=0.6,
-                                below.smoothed.threshold=1.5,
-                                lowess.f=1/3,
-                                labelnote=NULL,
-                                pch=1,lw=4,
-                                linecol="red",
-                                make.legend=TRUE,
-                                main.title=NA,
-                                ...){
-  ##-----------------------------------------------------------------------------------------------
-  ##-----------------------------------------------------------------------------------------------
-  ## This function sorts samples by either interquartile range or number of probes called as detected.
-  ## It then computes Spearman correlation within groups of samples which are similar according to this
-  ## measure.  Correlations are plotted against either this measure or by rank, with a Loess curve.
-  ## The resulting plot can be helpful in deciding how many samples to discard on the basis of IQR or
-  ## number of detected probes.
-  ##-----------------------------------------------------------------------------------------------
-  ## VARIABLE DEFINITIONS
-  ##-----------------------------------------------------------------------------------------------
-  ##lumibatch: a lumibatch object.
-  ##logtransform: if TRUE, values will be log2-transformed before calculating IQR.  If using only ndetectedprobes as a QC measure, this is irrelevant
-  ##goby: the number of chips above and below the center chip to include when calculating rank correlations.  Ignored if cor.to="pseudochip".
-  ##xaxis: Plot the actual QC measure (IQR or number of detected probes), or relative rank of the chips (1 being lowest)
-  ##QCmeasure: IQR - use interquartile range for ranking arrays
-  ##           ndetectedprobes - use number of detected probes for ranking arrays
-  ##           MAplot.var - use variance of M in MA plot
-  ##           c("IQR","ndetectedprobes") - use both
-  ##           numeric vector with length equal to the number of samples - use this for ranking arrays
-  ##cor.to: "similar" for correlation within a sliding window, "pseudochip" for correlation to the median pseudochip.
-  ##labelnote: optional label for the plots, used only if QCmeasure is a numeric vector
-  ##detectionTh: nominal detection p-value to consider a probe as detected or not (0.01 by default)
-  ##pch: plotting character to be used for points (see ?par)
-  ##lw: line width for Loess curve
-  ## linecol: line color for Loess curve
-  ## ...: other arguments passed on to plot()
-  ##-----------------------------------------------------------------------------------------------
-  ##-----------------------------------------------------------------------------------------------
-  ##define the plotting function
-  ##-----------------------------------------------------------------------------------------------
-  ##-----------------------------------------------------------------------------------------------
-  makeplots <- function(expr.dat,goby,xaxis,QC.measure,rankcutoff,mincor,below.smoothed.threshold,labelnote="QC",pch,lw,linecol,cor.to,pseudochip.samples,make.legend,...){
-    if(any(is.na(QC.measure)|is.nan(QC.measure))){
-      navals <- which(is.na(QC.measure)|is.nan(QC.measure))
-      warning(paste(length(navals),"NA and NaN values of QC.measure were removed, along with the associated samples"))
-      expr.dat <- expr.dat[,-navals]
-      QC.measure <- QC.measure[-navals]
-    }
-    expr.sort <- expr.dat[,order(QC.measure)]
-    pseudochip.samples <- pseudochip.samples[order(QC.measure)]
-    if(cor.to[1]=="similar"){
-      if(is.na(main.title)|is.null(main.title)){
-        thismain <- paste("Rank correlation of groups of ",2*goby+1," arrays\n grouped by ",labelnote,", lowest to highest",sep="")
-      }else{
-        thismain <- main.title
-      }
-      print("Calculating correlation within sliding window...")
-      cor.vector <- rep(NA,length(QC.measure))
-      for (i in (1+goby):(length(QC.measure)-goby)){
-        thiscor <- cor(expr.sort[,(i-goby):min((i+goby),ncol(expr.sort))],method="spearman",use="pairwise.complete.obs")
-        cor.vector[i] <- median(thiscor[-(1+goby),1+goby],na.rm=TRUE)
-      }
-      ##For the first few samples, calculate the median correlation to the first goby samples
-      thiscor <- cor(expr.sort[,1:(1+goby)],method="spearman",use="pairwise.complete.obs")
-      for (i in 1:(1+goby)){
-        cor.vector[i] <- median(thiscor[-i,i],na.rm=TRUE)
-      }
-      names(cor.vector) <- colnames(expr.sort)
-      for (i in 1:length(cor.vector)){
-        if (is.na(cor.vector[i])){  ## replace NA values
-          if(i < (length(cor.vector)-goby)){  #for the low QC values, NA values should be replaced with 0
-            cor.vector[i] <- 0
-          }else{
-            ##otherwise, replace the last few NA values with the mean correlation of 5 arrays at the top of the QC range.
-            cor.vector[i] <- mean(cor.vector[(length(cor.vector)-5):length(cor.vector)],na.rm=TRUE) 
-          }
-        }
-      }
-    }else if(cor.to[1]=="pseudochip"){
-      if(is.na(main.title)|is.null(main.title)){
-        thismain <- paste("Rank correlation to median pseudochip \n grouped by ",labelnote,", lowest to highest",sep="")
-      }else{
-        thismain <- main.title
-      }
-      print("Calculating Spearman correlation to median pseudochip using pairwise complete observations.")
-      print(paste("Using samples:",paste(colnames(expr.sort)[pseudochip.samples],collapse=", ")))
-      pseudochip <- apply(expr.sort[,pseudochip.samples],1,median,na.rm=TRUE)
-      cor.vector <- cor(expr.sort,pseudochip,method="spearman",use="pairwise.complete.obs")[,1]
-    }
-    QC.measure.sort <- QC.measure[order(QC.measure)]
-    if(xaxis[1]=="index"){
-      cormat.2col <- data.frame(i=1:length(cor.vector),
-                                spearman=cor.vector,
-                                row.names=names(cor.vector))
-    }else{
-      cormat.2col <- data.frame(i=QC.measure.sort,
-                                spearman=cor.vector,
-                                row.names=names(cor.vector))
-    }
-    cormat.2col <- cormat.2col[!is.na(cormat.2col$spearman),]
-    cor.vector <- cor.vector[match(rownames(cormat.2col),names(cor.vector))]
-    rejectQC <- rep(FALSE,length(cor.vector));names(rejectQC) <- names(cor.vector)
-    if(!is.na(lowess.f)&!is.null(lowess.f)){
-      movingavg.n <- 2*goby+1
-      library(TTR)
-myavg <- rev(SMA(rev(cormat.2col$spearman),n=movingavg.n))
-      if(class(myavg)=="try-error"){
-        warning(paste("error in loess fit for",labelnote))
-        if(is.null(rankcutoff)) rankcutoff <- 1
-      }else{
-        was.na <- as.integer(attributes(na.omit(as.numeric(myavg)))$na.action)
-        ##Use original values for those that couldn't be smoothed by SMA:
-        myavg[was.na] <- cormat.2col[was.na,"spearman"]
-        cormat.2col$movingaverage <- myavg
-        cormat.loess <- loess(movingaverage~i,data=cormat.2col,span=lowess.f,)
-        cormat.2col$interpolate.i <- seq(min(cormat.2col$i),max(cormat.2col$i),length.out=nrow(cormat.2col))
-        cormat.2col$smoothed <- predict(cormat.loess,data.frame(i=cormat.2col$interpolate.i))
-        library(sfsmisc)
-        cormat.2col$ddy <- D1D2(cormat.2col$interpolate.i,cormat.2col$smoothed,deriv=2,spar.offset=0.6)$D2
-        cormat.2col$ddy[1] <- NA
-        ##only consider samples with sufficiently low correlation as the cutoff:
-        cormat.lowspearman <- cormat.2col[cormat.2col$spearman<maxcor,]
-        if(is.null(rankcutoff)) rankcutoff <- cormat.lowspearman$interpolate.i[which.min(cormat.lowspearman$ddy)]
-        diff.from.smoothed <- cormat.2col$spearman-cormat.2col$smoothed
-        reject.below.smoothed <- diff.from.smoothed < (-below.smoothed.threshold*IQR(diff.from.smoothed))
-      }
-      if(xaxis[1]!="index"){
-        rankcutoff <- sum(cormat.2col$i < rankcutoff)
-      }
-      rejectQC[1:rankcutoff] <- TRUE
-      if(exists("reject.below.smoothed")) rejectQC[reject.below.smoothed] <- TRUE
-    } #end if(!is.na(lowess.f)&!is.null(lowess.f))
-    rejectQC[cor.vector<mincor] <- TRUE
-    if(all.equal(names(rejectQC),rownames(cormat.2col))){
-      cormat.2col$rejectQC <- rejectQC
-    }else{
-      warning("Something is wrong with the sample names.")
-    }
-    mycol <- ifelse(rejectQC,"red","black")
-    ##correct label note
-    if(xaxis[1]=="index"){
-      xlab <- paste(labelnote,"rank, 1 is smallest")
-    }else{
-      xlab <- labelnote
-    }
-    ##make the plot:
-    plot(spearman~i,data=cormat.2col,
-         pch=pch,
-         col=mycol,
-         xlab=xlab,
-         ylab="Spearman correlation",
-         main=thismain,
-         ...)
-    if(mincor>0) abline(h=mincor,col="red")
-    abline(v=cormat.2col[rankcutoff,"i"],col="red")
-    reject.summary <- summary(cormat.2col$rejectQC)
-    if(make.legend){
-      legend("bottomright",pch=1,lty=-1,legend=c(paste(reject.summary[3],"rejected"),paste(reject.summary[2],"not rejected")),bty='n',col=c("red","black"))
-    }
-    if("smoothed" \%in\% colnames(cormat.2col)){
-      lines(smoothed~interpolate.i,data=cormat.2col,lw=lw,col="red")
-    }
-    return(cormat.2col)
-  }
-  ## get ready then call the plotting function
-  if(logtransform){
-    expr.dat <- log2(exprs(lumibatch))
-  }else{
-    expr.dat <- exprs(lumibatch)
-  }
-  output <- list()
-  if(identical(class(QCmeasure),"numeric") | identical(class(QCmeasure),"integer")){
-    for (thisxaxis in xaxis){
-      if(is.na(labelnote)|is.null(labelnote)) labelnote <- "custom QC"
-      thismethod <- paste(thisxaxis,QCmeasure,sep="_")
-      output[[thismethod]] <- makeplots(expr.dat,goby,thisxaxis,QC.measure=QCmeasure,cor.to=cor.to,pseudochip.samples=pseudochip.samples,rankcutoff,mincor,below.smoothed.threshold=below.smoothed.threshold,labelnote,lw=lw,pch=pch,linecol=linecol,make.legend=make.legend,...)
-    }
-  }else if("IQR"\%in\% QCmeasure){
-    Raw.IQR <- apply(expr.dat,2,IQR,na.rm=TRUE)
-    Raw.IQR[is.na(Raw.IQR)] <- 0
-    for (thisxaxis in xaxis){
-      thismethod <- paste(thisxaxis,QCmeasure,sep="_")
-      output[[thismethod]] <- makeplots(expr.dat,goby,thisxaxis,QC.measure=Raw.IQR,cor.to=cor.to,pseudochip.samples=pseudochip.samples,rankcutoff,mincor,below.smoothed.threshold=below.smoothed.threshold,labelnote="IQR",lw=lw,pch=pch,linecol=linecol,make.legend=make.legend,...)
-    }
-  }else if("ndetectedprobes"\%in\% QCmeasure){
-    Raw.fractiondetected <- apply(detection(lumibatch),2,function(x) sum(x<detectionTh)/length(x))
-    for (thisxaxis in xaxis){
-      thismethod <- paste(thisxaxis,QCmeasure,sep="_")
-      output[[thismethod]] <- makeplots(expr.dat,goby,thisxaxis,QC.measure=Raw.fractiondetected,cor.to=cor.to,pseudochip.samples=pseudochip.samples,rankcutoff,mincor,below.smoothed.threshold=below.smoothed.threshold,labelnote="fraction detected",lw=lw,pch=pch,linecol=linecol,make.legend=make.legend,...)
-    }
-  }else if("MAplot.var"\%in\% QCmeasure){
-    ma.results <- ma.stats(expr.dat)
-    M <- na.omit(ma.results[["M"]])
-    M.var <- 1/apply(M,2,function(x){  ##variance of difference from Lowess curve
-      output <- try(var(x-lowess(x)$y))
-      if(class(output)=="try-error") output <- 1000
-      return(output)
-    })
-##    M.var <- 1/apply(M,2,function(x) sum(abs(x))/length(x))
-##    M.var <- 1/apply(M,2,var)
-    M.var[is.na(M.var)] <- 0
-    for (thisxaxis in xaxis){
-      thismethod <- paste(thisxaxis,QCmeasure,sep="_")
-      output[[thismethod]] <- makeplots(expr.dat,goby,thisxaxis,QC.measure=M.var,cor.to=cor.to,pseudochip.samples=pseudochip.samples,rankcutoff,mincor,below.smoothed.threshold=below.smoothed.threshold,labelnote="IQR",lw=lw,pch=pch,linecol=linecol,make.legend=make.legend,...)
-    }
-  }
-  ##Sort the output to the original sample order
-  output <- lapply(output,function(x) x[na.omit(match(sampleNames(lumibatch),rownames(x))),])
-  if(length(output)==1) output <- output[[1]]
-  return(output)
-  }
+library(ffpe)
+data(lumibatch.GSE17565)
+
+QC <- plotSpearmanvsGroup(lumibatch.GSE17565,xaxis="index",cor.to="pseudochip",QCmeasure="IQR")
+
+##sort samples
+QCvsRNA <- data.frame(inputRNA.ng=lumibatch.GSE17565$inputRNA.ng,rejectQC=QC$rejectQC)
+QCvsRNA <- QCvsRNA[order(QCvsRNA$rejectQC,-QCvsRNA$inputRNA.ng),]
+
+##QC rejects samples with lowest input RNA concentration\n
+par(mgp=c(4,2,0))
+dotchart(log10(QCvsRNA$inputRNA.ng),
+         QCvsRNA$rejectQC,
+         xlab="log10(RNA conc. in ng)",
+         ylab="rejected?",
+         col=ifelse(QCvsRNA$rejectQC,"red","black"))
+
 }
+
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+\keyword{ hplot }% __ONLY ONE__ keyword per line

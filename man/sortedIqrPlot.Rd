@@ -56,9 +56,12 @@ Levi Waldron
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
+
 library(ffpe)
-load(lumibatch.GSE17565)
+data(lumibatch.GSE17565)
 sortedIqrPlot(lumibatch.GSE17565,main="GSE17565")
+
+}
 
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
