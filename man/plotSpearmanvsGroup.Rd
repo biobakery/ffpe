@@ -209,7 +209,7 @@ plotSpearmanvsGroup(data.obj,logtransform = TRUE, goby = 3, xaxis = c("index", "
 
 \references{
   
-  %% ~put references to the literature/web site here ~
+  Under review.
   
 }
 \author{
@@ -240,6 +240,4 @@ dotchart(log10(QCvsRNA$inputRNA.ng),
 
 }
 
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
 \keyword{ hplot }% __ONLY ONE__ keyword per line

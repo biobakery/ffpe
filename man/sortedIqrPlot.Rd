@@ -1,4 +1,5 @@
 \name{sortedIqrPlot}
+\alias{sortedIqrPlot}
 
 \title{
   
@@ -19,13 +20,13 @@
 
 \usage{
 
-sortedIqrPlot(lumiobj, batchvar = rep(1, ncol(lumiobj)), ...)
+sortedIqrPlot(data.obj, batchvar = rep(1, ncol(data.obj)), dolog2=FALSE, ...)
 
 }
 
 \arguments{
   
-  \item{lumiobj}{
+  \item{data.obj}{
     An object of class LumiBatch, AffyBatch, ExpressionSet, or matrix.  This
     should contain raw, unnormalized, expression intensities.
   }
@@ -59,7 +60,7 @@ sortedIqrPlot(lumiobj, batchvar = rep(1, ncol(lumiobj)), ...)
 
 \references{
   
-  %% ~put references to the literature/web site here ~
+  Under review.
   
 }
 
@@ -69,11 +70,7 @@ sortedIqrPlot(lumiobj, batchvar = rep(1, ncol(lumiobj)), ...)
   
 }
 
-\note{
-  %%  ~~further notes~~
-}
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
   plotSpearmanvsGroup
@@ -86,7 +83,5 @@ sortedIqrPlot(lumibatch.GSE17565,main="GSE17565")
 
 }
 
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
 \keyword{hplot}
 

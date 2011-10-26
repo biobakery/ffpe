@@ -87,8 +87,6 @@ library(ffpe)
 library(lumi)
 data(lumibatch.GSE17565)
 
-load("../data/lumibatch.GSE17565.rda")
-
 ##preprocessing, individually for rep1 and rep2
 lumibatch.rep1 <- lumibatch.GSE17565[,lumibatch.GSE17565$replicate==1]
 lumbiatch.rep1 <- lumiT(lumibatch.rep1,"log2")
