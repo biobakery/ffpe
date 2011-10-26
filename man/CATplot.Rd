@@ -1,88 +1,119 @@
 \name{CATplot}
 \alias{CATplot}
-%- Also NEED an '\alias' for EACH other topic documented here.
+
 \title{
-%%  ~~function to do ... ~~
+  
+  Make a Concordance at the Top plot.
+  
 }
+
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+
+  For the i top-ranked members of each list, concordance is defined as
+  length(intersect(vec1[1:i],vec2[1:i]))/i.  This concordance is plotted
+  as a function of i.
+  
 }
+
 \usage{
-CATplot(vec1, vec2, maxrank, make.plot = TRUE, ...)
+
+CATplot(vec1, vec2, maxrank = min(length(vec1),length(vec2)), make.plot = TRUE, ...)
+
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
-  \item{vec1}{
-%%     ~~Describe \code{vec1} here~~
-}
-  \item{vec2}{
-%%     ~~Describe \code{vec2} here~~
-}
+
+  \item{vec1, vec2}{
+    Two numeric vectors, for computing concordance.  If these are
+    numeric vectors with names, the numeric values will be used for
+    sorting and the names will be used for calculating concordance.
+    Otherwise, they are assumed to be already-ranked vectors, and the
+    values themselves will be used for calculating concordance.
+  }
+
   \item{maxrank}{
-%%     ~~Describe \code{maxrank} here~~
-}
+
+    Optionally specify the maximum size of top-ranked items that you
+    want to plot.
+    
+  }
+  
   \item{make.plot}{
-%%     ~~Describe \code{make.plot} here~~
-}
+  
+    If TRUE, the plot will be made.  Set to FALSE if you just want the
+    concordance calculations.
+    
+  }
+  
   \item{\dots}{
-%%     ~~Describe \code{\dots} here~~
+
+    Optional arguments passed onto plot()
+    
+  }
+  
 }
-}
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
+
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+
+  Returns a dataframe with two columns:
+
+  \item{i}{length of top lists}
+  \item{concordance}{fraction in common that the two provided lists have
+    in the top i items}
+
 }
+
 \references{
-%% ~put references to the literature/web site here ~
+
+  The CAT-plot was suggested by Irizarry et al.:
+  
+  Irizarry, R.A. et al. Multiple-laboratory comparison of microarray
+  platforms. Nat Meth 2, 345-350 (2005).
+
+  The CAT-boxplot for multiple splits of a single dataset was suggested
+  by Waldron et al. (under review).
+  
 }
+
 \author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
+
+  Levi Waldron <lwaldron@hsph.harvard.edu>
+  
 }
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
 
-## The function is currently defined as
-function(vec1,vec2,maxrank,make.plot=TRUE,...){ 
-  ##----------------------------------------------------------------------
-  ##----------------------------------------------------------------------
-  ##Fuction for Concordance at the Top plots
-  ##----------------------------------------------------------------------
-  ## vec1 and vec2: ranked lists to use for CAT plot
-  ## maxrank: only go up to maxrank
-  ## make.plot: if TRUE, the plot will be made
-  ## ...: arguments passed on to plot
-  ##----------------------------------------------------------------------  
-  x1 <- sort(vec1)
-  x2 <- sort(vec2)
-  if(is.na(maxrank)|is.null(maxrank)|maxrank>min(length(x1),length(x2))) maxrank <- min(length(vec1),length(vec2))
-  output <- data.frame(rank=1:maxrank,
-                       fraction=(1:maxrank)/max(length(x1),length(x2)),
-                       concordance=NA)
-  for (i in 1:nrow(output)){
-    output[i,"concordance"] <- length(intersect(names(x1)[1:i],names(x2)[1:i]))/i
-  }
-  if(make.plot) plot(concordance~rank,data=output,type='l',...)
-  return(output)
-  }
+library(ffpe)
+library(lumi)
+data(lumibatch.GSE17565)
+
+load("../data/lumibatch.GSE17565.rda")
+
+##preprocessing, individually for rep1 and rep2
+lumibatch.rep1 <- lumibatch.GSE17565[,lumibatch.GSE17565$replicate==1]
+lumbiatch.rep1 <- lumiT(lumibatch.rep1,"log2")
+lumbiatch.rep1 <- lumiN(lumibatch.rep1,"quantile")
+probe.var <- apply(exprs(lumibatch.rep1),1,var)
+lumibatch.rep1 <- lumibatch.rep1[probe.var > median(probe.var),]
+
+lumibatch.rep2 <- lumibatch.GSE17565[,lumibatch.GSE17565$replicate==2]
+lumibatch.rep2 <- lumiT(lumibatch.rep2,"log2")
+lumibatch.rep2 <- lumiN(lumibatch.rep2,"quantile")
+lumibatch.rep2 <- lumibatch.rep2[featureNames(lumibatch.rep1),]
+
+##row t-tests for differential expression
+library(genefilter)
+ttests.rep1 <- rowttests(exprs(lumibatch.rep1),fac=factor(lumibatch.rep1$cell.type))
+ttests.rep2 <- rowttests(exprs(lumibatch.rep2),fac=factor(lumibatch.rep2$cell.type))
+
+pvals.rep1 <- ttests.rep1$p.value;names(pvals.rep1) <- rownames(ttests.rep1)
+pvals.rep2 <- ttests.rep2$p.value;names(pvals.rep2) <- rownames(ttests.rep2)
+
+## Very high concordance between top differentially expressed gene lists
+## identified by different replicates
+x <- CATplot(pvals.rep1,pvals.rep2,maxrank=1000,xlab="Size of top-ranked gene lists",ylab="Concordance")
+legend("topleft",lty=1:2,legend=c("Actual concordance","Concordance expected by chance"), bty="n")
+
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+
+\keyword{ hplot }
