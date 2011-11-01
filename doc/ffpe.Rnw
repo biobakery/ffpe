@@ -1,0 +1,57 @@
+\documentclass{article}
+
+\usepackage{natbib}
+\usepackage{graphics}
+
+% \VignetteIndexEntry{FFPE Example}
+
+\begin{document}
+
+<<foo,include=FALSE,echo=FALSE>>=
+options(keep.source = TRUE, width = 60)
+foo <- packageDescription("ffpe")
+@
+
+\title{FFPE Package Example (Version \Sexpr{foo$Version})}
+\author{Levi Waldron}
+\maketitle
+
+\section{The Problem}
+
+This is an example of using the \verb@ffpe@ Bioconductor package for
+quality control of gene expression data derived from formalin-fixed,
+paraffin-embedded (FFPE) tissues.  These data tend to be noisier and
+more susceptible to experimental artefacts than data derived from
+fresh-frozen tissues, but are much more widely available, particularly
+for patients with long-term health history and clinical follow-up.
+
+Example data (of better quality than is typical for clinical FFPE
+specimens) are taken from the early study of the Illumina WG-DASL
+microarray assay for FFPE specimens, by
+\citet{april_whole-genome_2009}, using only the dilution series from
+Burkitts Lymphoma and Breast Adenocarcinoma cell lines.  The dilution
+series provide a range of sample qualities from very high at most
+dilution levels, to low at the lowest dilution levels.
+
+\section{Initial inspection of raw data}
+
+The boxplot of raw log2 expression intensities is a useful first look
+at data quality.  Samples can be ordered by extraction sequence, batch
+number, or Interquartile Range (IQR).  When dealing with hundreds of
+samples, however, a boxplot can become difficult to view.  The
+\emph{sortedIqrPlot} function provides a convenient means to view only
+the 25^{th} to 75{^th} percentile of expression intensities, which is
+extensible to more than a thousand samples.  By default, samples are
+sorted from smallest to largest IQR, but batch ID or any string can be
+provided for ordering of the samples.  In the case of duplicate IDs,
+for example with batches, samples are further sorted by IQR within
+each batch.
+
+<<<sortediqrplot>>=
+library(ffpe)
+data(lumibatch.GSE17565)
+@ 
+
+%%\bibliography{ffpe}
+
+\end{document}

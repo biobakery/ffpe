@@ -28,7 +28,6 @@ plotSpearmanvsGroup <-
     ##-----------------------------------------------------------------------------------------------
     ## VARIABLE DEFINITIONS
     ##-----------------------------------------------------------------------------------------------
-
     ##logtransform: if TRUE, values will be log2-transformed before calculating IQR.  If using only ndetectedprobes as a QC measure, this is irrelevant
     ##goby: the number of chips above and below the center chip to include when calculating rank correlations.  Ignored if cor.to="pseudochip".
     ##xaxis: Plot the actual QC measure (IQR or number of detected probes), or relative rank of the chips (1 being lowest)
@@ -258,8 +257,15 @@ plotSpearmanvsGroup <-
       }
     }
     ##Sort the output to the original sample order
-    output <- lapply(output,function(x) x[na.omit(match(sampleNames(data.obj),rownames(x))),])
+    output <- lapply(output,function(x){
+          if(class(data.obj)=="AffyBatch"|class(data.obj)=="LumiBatch"){
+            mt <- na.omit(match(sampleNames(data.obj),rownames(x)))
+          }else{
+            mt <- na.omit(match(colnames(data.obj),rownames(x)))
+          }
+          return(x[mt,])
+        }
+                     )
     if(length(output)==1) output <- output[[1]]
     return(output)
   }
-
