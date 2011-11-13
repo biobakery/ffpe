@@ -1,34 +1,40 @@
+
 \documentclass{article}
 
 \usepackage{natbib}
 \usepackage{graphics}
 
-% \VignetteIndexEntry{FFPE Example}
+% \VignetteIndexEntry{ffpe package user guide}
 
 \begin{document}
 
 <<foo,include=FALSE,echo=FALSE>>=
 options(keep.source = TRUE, width = 60)
-foo <- packageDescription("ffpe")
+foo <- packageDescription("mcmc")
 @
+
 
 \title{FFPE Package Example (Version \Sexpr{foo$Version})}
 \author{Levi Waldron}
 \maketitle
 
-\section{The Problem}
+\section{Introduction}
 
-This is an example of using the \verb@ffpe@ Bioconductor package for
-quality control of gene expression data derived from formalin-fixed,
-paraffin-embedded (FFPE) tissues.  These data tend to be noisier and
-more susceptible to experimental artefacts than data derived from
-fresh-frozen tissues, but are much more widely available, particularly
-for patients with long-term health history and clinical follow-up.
+
+Gene expression data derived for formalin-fixed, paraffin-embedded
+(FFPE) tissues tend to be noisier and more susceptible to experimental
+artefacts than data derived from fresh-frozen tissues.  Microarray
+studies of FFPE tissues may also be of a larger scale than of
+fresh-frozen tissues.  Both of these factors contribute to the need
+for new quality control and visualization techniques.  This is an
+example of using the \verb@ffpe@ Bioconductor package for quality
+control of gene expression data derived from formalin-fixed,
+paraffin-embedded (FFPE) tissues.
 
 Example data (of better quality than is typical for clinical FFPE
 specimens) are taken from the early study of the Illumina WG-DASL
-microarray assay for FFPE specimens, by
-\citet{april_whole-genome_2009}, using only the dilution series from
+microarray assay for FFPE specimens by April et al.
+\cite{april_whole-genome_2009}, using only the dilution series from
 Burkitts Lymphoma and Breast Adenocarcinoma cell lines.  The dilution
 series provide a range of sample qualities from very high at most
 dilution levels, to low at the lowest dilution levels.
@@ -40,18 +46,43 @@ at data quality.  Samples can be ordered by extraction sequence, batch
 number, or Interquartile Range (IQR).  When dealing with hundreds of
 samples, however, a boxplot can become difficult to view.  The
 \emph{sortedIqrPlot} function provides a convenient means to view only
-the 25^{th} to 75{^th} percentile of expression intensities, which is
-extensible to more than a thousand samples.  By default, samples are
-sorted from smallest to largest IQR, but batch ID or any string can be
-provided for ordering of the samples.  In the case of duplicate IDs,
-for example with batches, samples are further sorted by IQR within
-each batch.
+the 25th to 75th percentile of expression intensities, which is
+extensible to more than a thousand samples, and to sort samples by a
+specified quality metric.  By default, samples are sorted from
+smallest to largest IQR, but batch ID or any string can be provided
+for ordering of the samples.  In the case of duplicate IDs, for
+example with batches, samples are further sorted by IQR within each
+batch.  An example of this simplified, sorted boxplot is shown for the
+April et al. dilution series in Figure~\ref{fig:fig1}.  
 
-<<<sortediqrplot>>=
+@ 
+<<prelim,echo=FALSE>>=
+options(device="pdf")
+@ %def 
+
+\begin{figure}
+\begin{center}
+@ 
+<<label=sortediqrplot,fig=TRUE,echo=TRUE,include=TRUE,eval=TRUE>>=
 library(ffpe)
 data(lumibatch.GSE17565)
-@ 
+sortedIqrPlot(lumibatch.GSE17565,dolog2=TRUE)
+@ %def 
+\end{center}
+\caption{ Simplified, sorted boxplot of the April et al. dilution
+  series.  Vertical lines indicate $25^{th}$ to $75^{th}$ percentile
+  of raw $log_2$ intensities for each sample; ie, the box portion of a
+  boxplot.  Samples are sorted from smallest to largest Interquartile
+  Range (IQR). }
+\label{fig:fig1}
+\end{figure}
 
-%%\bibliography{ffpe}
+\section{Sample Quality Control}
+
+Expression profiles with low dynamic range and low similarity to other
+samples in the study tend to be less reliable and less reproducible.  
+
+\bibliographystyle{plain}
+\bibliography{ffpe}
 
 \end{document}

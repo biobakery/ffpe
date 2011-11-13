@@ -19,17 +19,21 @@ function(data.obj,batchvar=rep(1,ncol(data.obj)),dolog2=FALSE,...){
         }
       data.obj <- log2(data.obj)
     }
-  persample.iqr <- apply(data.obj,2,quantile,probs=c(0.25,0.75),na.rm=TRUE)
-  persample.iqr <- persample.iqr[,order(batchvar,apply(persample.iqr,2,diff))]
-  plot(1:ncol(persample.iqr),
-       seq(min(persample.iqr),max(persample.iqr),length.out=ncol(persample.iqr)),
+  central50.range <- apply(data.obj,2,quantile,probs=c(0.25,0.75),na.rm=TRUE)
+  central50.range <- central50.range[,order(batchvar,apply(central50.range,2,diff))]
+  index <- 1:ncol(central50.range)
+  expression.intensity <- seq(min(central50.range),max(central50.range),length.out=ncol(central50.range))
+  plot(index,
+       expression.intensity,
        type='n',
        ...)
-  for (i in 1:ncol(persample.iqr))
+  for (i in 1:ncol(central50.range))
     {
       segments(x0=i,
-               y0=persample.iqr[1,i],
-               y1=persample.iqr[2,i])
+               y0=central50.range[1,i],
+               y1=central50.range[2,i])
     }
+  persample.iqr <- apply(data.obj,2,IQR,na.rm=TRUE)
+  invisible(persample.iqr)
 }
 

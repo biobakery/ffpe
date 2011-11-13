@@ -29,7 +29,7 @@
   }
 
   Quality control of FFPE expression data for Illumina and Affymetrix
-  microarrays.  The function plotSpearmanvsGroup identifies low-quality
+  microarrays.  The function sampleQC identifies low-quality
   expression data, using IQR or any other surrogate quality measure for
   expression data.  sortedIqrPlot provides a simplified, sorted boxplot of
   raw expression intensities as a quality summary for the experiment,
@@ -56,7 +56,7 @@
 library(ffpe)
 data(lumibatch.GSE17565)
 
-QC <- plotSpearmanvsGroup(lumibatch.GSE17565,xaxis="index",cor.to="pseudochip",QCmeasure="IQR")
+QC <- sampleQC(lumibatch.GSE17565,xaxis="index",cor.to="pseudochip",QCmeasure="IQR")
 
 ##sort samples
 QCvsRNA <- data.frame(inputRNA.ng=lumibatch.GSE17565$inputRNA.ng,rejectQC=QC$rejectQC)

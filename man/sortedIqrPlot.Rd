@@ -73,7 +73,7 @@ sortedIqrPlot(data.obj, batchvar = rep(1, ncol(data.obj)), dolog2=FALSE, ...)
 
 
 \seealso{
-  plotSpearmanvsGroup
+  sampleQC
 }
 \examples{
 
