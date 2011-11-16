@@ -1,0 +1,4 @@
+export(CATplot, sampleQC, sortedIqrPlot)
+import(lumi)
+importFrom(TTR, SMA)
+importFrom(sfsmisc, D1D2)

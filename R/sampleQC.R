@@ -1,4 +1,4 @@
-plotSpearmanvsGroup <-
+sampleQC <-
   function(data.obj,
            logtransform=TRUE,
            goby=3,
