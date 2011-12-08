@@ -222,6 +222,7 @@ sampleQC(data.obj,logtransform = TRUE, goby = 3, xaxis = c("index", "notindex"),
 \examples{
 
 library(ffpe)
+library(ffpeExampleData)
 data(lumibatch.GSE17565)
 
 QC <- sampleQC(lumibatch.GSE17565,xaxis="index",cor.to="pseudochip",QCmeasure="IQR")

@@ -67,6 +67,7 @@ options(device="pdf")
 @ 
 <<label=sortediqrplot,fig=TRUE,echo=TRUE,include=TRUE,eval=TRUE>>=
 library(ffpe)
+library(ffpeExampleData)
 data(lumibatch.GSE17565)
 sortedIqrPlot(lumibatch.GSE17565,dolog2=TRUE)
 @ %def 

@@ -84,6 +84,7 @@ CATplot(vec1, vec2, maxrank = min(length(vec1),length(vec2)), make.plot = TRUE, 
 \examples{
 
 library(ffpe)
+library(ffpeExampleData)
 library(lumi)
 data(lumibatch.GSE17565)
 

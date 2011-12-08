@@ -21,8 +21,8 @@
   \tabular{ll}{
     Package: \tab ffpe\cr
     Type: \tab Package\cr
-    Version: \tab 1.0\cr
-    Date: \tab 2011-10-21\cr
+    Version: \tab 1.0.0\cr
+    Date: \tab 2011-11-17\cr
     License: \tab GPL (>=2)\cr
     LazyLoad: \tab yes\cr
     biocViews: \tab Microarray, GeneExpression, QualityControl, Bioinformatics\cr
@@ -54,6 +54,7 @@
 \examples{
 
 library(ffpe)
+library(ffpeExampleData)
 data(lumibatch.GSE17565)
 
 QC <- sampleQC(lumibatch.GSE17565,xaxis="index",cor.to="pseudochip",QCmeasure="IQR")
