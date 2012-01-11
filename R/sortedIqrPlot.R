@@ -3,10 +3,8 @@ function(data.obj,batchvar=rep(1,ncol(data.obj)),dolog2=FALSE,...){
   if(!length(batchvar)==ncol(data.obj)) stop("length(batchvar) must be equal to ncol(data.obj)")
   if(class(data.obj)=="LumiBatch")
     {
-      library(lumi)
       data.obj <- exprs(data.obj)
     }else if(class(data.obj)=="AffyBatch" | class(data.obj)=="ExpressionSet"){
-      library(affy)
       data.obj <- exprs(data.obj)
     }else if(!class(data.obj)=="matrix"){
       stop("data.obj should be of class LumiBatch, AffyBatch, ExpressionSet, or matrix.")

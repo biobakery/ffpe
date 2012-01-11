@@ -77,7 +77,6 @@ sortedIqrPlot(data.obj, batchvar = rep(1, ncol(data.obj)), dolog2=FALSE, ...)
 }
 \examples{
 
-library(ffpe)
 library(ffpeExampleData)
 data(lumibatch.GSE17565)
 sortedIqrPlot(lumibatch.GSE17565,main="GSE17565")

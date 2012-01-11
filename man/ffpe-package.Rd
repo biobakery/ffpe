@@ -53,7 +53,6 @@
 
 \examples{
 
-library(ffpe)
 library(ffpeExampleData)
 data(lumibatch.GSE17565)
 

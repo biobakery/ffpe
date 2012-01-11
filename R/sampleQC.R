@@ -111,7 +111,6 @@ sampleQC <-
       rejectQC <- rep(FALSE,length(cor.vector));names(rejectQC) <- names(cor.vector)
       if(!is.na(lowess.f)&!is.null(lowess.f)){
         movingavg.n <- 2*goby+1
-        library(TTR)
         myavg <- rev(SMA(rev(cormat.2col$spearman),n=movingavg.n))
         if(class(myavg)=="try-error"){
           warning(paste("error in loess fit for",labelnote))
@@ -124,7 +123,6 @@ sampleQC <-
           cormat.loess <- loess(movingaverage~i,data=cormat.2col,span=lowess.f,)
           cormat.2col$interpolate.i <- seq(min(cormat.2col$i),max(cormat.2col$i),length.out=nrow(cormat.2col))
           cormat.2col$smoothed <- predict(cormat.loess,data.frame(i=cormat.2col$interpolate.i))
-          library(sfsmisc)
           cormat.2col$ddy <- D1D2(cormat.2col$interpolate.i,cormat.2col$smoothed,deriv=2,spar.offset=0.6)$D2
           cormat.2col$ddy[1] <- NA
           ##only consider samples with sufficiently low correlation as the cutoff:
@@ -178,10 +176,8 @@ sampleQC <-
     }
     ## get ready then call the plotting function
     if(class(data.obj)=="LumiBatch"){
-      library(lumi)
       expr.dat <- exprs(data.obj)
     }else if(class(data.obj)=="AffyBatch"){
-      library(affy)
       expr.dat <- exprs(data.obj)
     }else{
       expr.dat <- as.matrix(data.obj)

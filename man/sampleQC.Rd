@@ -221,7 +221,6 @@ sampleQC(data.obj,logtransform = TRUE, goby = 3, xaxis = c("index", "notindex"),
 
 \examples{
 
-library(ffpe)
 library(ffpeExampleData)
 data(lumibatch.GSE17565)
 
