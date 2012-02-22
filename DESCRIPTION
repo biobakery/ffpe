@@ -5,8 +5,9 @@ Version: 0.99.1
 Author: Levi Waldron
 Maintainer: Levi Waldron <lwaldron@hsph.harvard.edu>
 Description: Identify low-quality data using metrics developed for expression data derived from Formalin-Fixed, Paraffin-Embedded (FFPE) data.  Also a function for making Concordance at the Top plots (CAT-plots).
+Collate: sampleQC.R sortedIqrPlot.R CATplot.R
 Depends: R (>= 2.10.0), TTR
-Imports: Biobase, BiocGenerics, lumi, methylumi, sfsmisc
+Imports: Biobase, lumi, methylumi, sfsmisc
 Suggests: genefilter, affy, ffpeExampleData
 biocViews: Microarray, GeneExpression, QualityControl, Bioinformatics
 License: GPL (>2)
