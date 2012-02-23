@@ -64,7 +64,11 @@ sampleQC(data.obj,logtransform = TRUE, goby = 3, xaxis = c("index", "notindex"),
   
   \item{QCmeasure}{
     
-    Automated options include "IQR" and "ndetectedprobes" -
+    Automated options include "IQR" and "ndetectedprobes".  These are
+    the Interquartile Range and number of probes called present,
+    respectively.  QCmeasure can also be a numeric vector of length
+    equal to the number of samples, to manually specify some other
+    quality metric.
     
   }
 

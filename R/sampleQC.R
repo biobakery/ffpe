@@ -5,7 +5,7 @@ setGeneric("sampleQC", function(data.obj,
                                 QCmeasure="IQR",
                                 cor.to="pseudochip",
                                 pseudochip.samples=1:ncol(data.obj),
-                                detectionTh,
+                                detectionTh=0.01,
                                 manualcutoff=NULL,
                                 mincor=0,
                                 maxcor=0.8,
@@ -53,6 +53,7 @@ setMethod("sampleQC",signature(data.obj="matrix"), function(data.obj,
   ##define the plotting function
   ##-----------------------------------------------------------------------------------------------
   ##-----------------------------------------------------------------------------------------------
+  if(! (QCmeasure[1] == "IQR" | class(QCmeasure) == "numeric" | class(QCmeasure) == "integer")) stop("Invalid type for QCmeasure")
   makeplots <- function(expr.dat,goby,xaxis,QC.measure,manualcutoff,mincor,below.smoothed.threshold,labelnote="QC",pch,lw,linecol,cor.to,pseudochip.samples,make.legend){
     if(any(is.na(QC.measure)|is.nan(QC.measure))){
       navals <- which(is.na(QC.measure)|is.nan(QC.measure))
@@ -231,47 +232,43 @@ setMethod("sampleQC",signature(data.obj="matrix"), function(data.obj,
 }
           )
 
-
 setMethod("sampleQC",signature(data.obj="LumiBatch"),
-          function(data.obj,
-                   logtransform=TRUE,
-                   goby=3,
-                   xaxis="notindex",
-                   QCmeasure="IQR",
-                   cor.to="pseudochip",
-                   pseudochip.samples=1:ncol(data.obj),
-                   detectionTh=0.01,
-                   manualcutoff=NULL,
-                   mincor=0,
-                   maxcor=0.8,
-                   below.smoothed.threshold=1.5,
-                   lowess.f=1/3,
-                   labelnote=NULL,
-                   pch=1,lw=4,
-                   linecol="red",
-                   make.legend=TRUE,
-                   main.title=NA
-                   ){
+          function(data.obj, logtransform, goby, xaxis, QCmeasure,
+                   cor.to, pseudochip.samples, detectionTh, manualcutoff,
+                   mincor, maxcor, below.smoothed.threshold, lowess.f,
+                   labelnote, pch,lw, linecol, make.legend, main.title ){
+            ##
             expr.dat <- exprs(data.obj)
             if("ndetectedprobes" %in% QCmeasure){
-              Raw.fractiondetected <- apply(detection(data.obj),2,function(x) sum(x<detectionTh)/length(x))
-              sampleQC(data.obj=expr.dat, logtransform, goby, xaxis,
-                       QCmeasure=Raw.fractiondetected,
-                       cor.to, pseudochip.samples,
-                       detectionTh, manualcutoff, mincor, maxcor,
-                       below.smoothed.threshold, lowess.f,
-                       labelnote="fraction detected", pch,lw, linecol,
-                       make.legend
-                       )
-            }else{
-              sampleQC(data.obj=expr.dat, logtransform, goby, xaxis,
-                       QCmeasure,
-                       cor.to, pseudochip.samples,
-                       detectionTh, manualcutoff, mincor, maxcor,
-                       below.smoothed.threshold, lowess.f,
-                       labelnote, pch, lw, linecol,
-                       make.legend
-                       )
+              QCmeasure <- apply(detection(data.obj),2,function(x) sum(x<detectionTh)/length(x))
+              labelnote <- "fraction detected"
             }
+            sampleQC(data.obj=expr.dat, logtransform, goby, xaxis,
+                     QCmeasure=QCmeasure,
+                     cor.to, pseudochip.samples,
+                     detectionTh, manualcutoff, mincor, maxcor,
+                     below.smoothed.threshold, lowess.f,
+                     labelnote=labelnote, pch, lw, linecol,
+                     make.legend
+                     )
+          }
+          )
+
+
+setMethod("sampleQC",signature(data.obj="ExpressionSet"),
+          function(data.obj, logtransform, goby, xaxis, QCmeasure,
+                   cor.to, pseudochip.samples, detectionTh, manualcutoff,
+                   mincor, maxcor, below.smoothed.threshold, lowess.f,
+                   labelnote, pch,lw, linecol, make.legend, main.title ){
+            ##
+            expr.dat <- exprs(data.obj)
+            if("ndetectedprobes" %in% QCmeasure)
+              stop("QCmeasure = \"ndetectedprobes\" is only implemented for LumiBatch objects.")
+            sampleQC(data.obj=expr.dat, logtransform, goby, xaxis,
+                     QCmeasure, cor.to, pseudochip.samples,
+                     detectionTh, manualcutoff, mincor, maxcor,
+                     below.smoothed.threshold, lowess.f,
+                     labelnote=labelnote, pch, lw, linecol,
+                     make.legend )
           }
           )
