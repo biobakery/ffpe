@@ -1,5 +1,8 @@
 \name{sortedIqrPlot}
 \alias{sortedIqrPlot}
+\alias{sortedIqrPlot,matrix-method}
+\alias{sortedIqrPlot,AffyBatch-method}
+\alias{sortedIqrPlot,LumiBatch-method}
 
 \title{
   
@@ -21,13 +24,15 @@
 \usage{
 
 sortedIqrPlot(data.obj, batchvar = rep(1, ncol(data.obj)), dolog2=FALSE, ...)
-
+      \S4method{sortedIqrPlot}{LumiBatch}(data.obj, batchvar = rep(1, ncol(data.obj)), dolog2=FALSE, ...)
+      \S4method{sortedIqrPlot}{AffyBatch}(data.obj, batchvar = rep(1, ncol(data.obj)), dolog2=FALSE, ...)
+      \S4method{sortedIqrPlot}{matrix}(data.obj, batchvar = rep(1, ncol(data.obj)), dolog2=FALSE, ...)
 }
 
 \arguments{
   
   \item{data.obj}{
-    An object of class LumiBatch, AffyBatch, ExpressionSet, or matrix.  This
+    An object of class LumiBatch, AffyBatch, AffyBatch, or matrix.  This
     should contain raw, unnormalized, expression intensities.
   }
   
@@ -48,13 +53,19 @@ sortedIqrPlot(data.obj, batchvar = rep(1, ncol(data.obj)), dolog2=FALSE, ...)
 
 \details{
   
-  Function produces a plot only.
+  Function will be generally called for the side-effect of producing a
+  plot of sorted IQRs, but if the output is redirected it also produces
+  the IQRs.
   
 }
 
 \value{
 
-  none
+  If the output is redirected, e.g.:
+
+  output <- sortedIqrPlot()
+
+  the function will return the IQR of each sample.
   
 }
 

@@ -15,14 +15,15 @@ setGeneric("sampleQC", function(data.obj,
                                 pch=1,lw=4,
                                 linecol="red",
                                 make.legend=TRUE,
-                                main.title=NA)
-                                standardGeneric("sampleQC"))
+                                main.title=NA,
+                                ...)
+           standardGeneric("sampleQC"))
 
 setMethod("sampleQC",signature(data.obj="matrix"), function(data.obj,
                                  logtransform, goby, xaxis, QCmeasure, cor.to,
                                  pseudochip.samples, detectionTh, manualcutoff, mincor,
                                  maxcor, below.smoothed.threshold, lowess.f, labelnote,
-                                 pch,lw, linecol, make.legend, main.title){
+                                 pch,lw, linecol, make.legend, main.title,...){
   ##-----------------------------------------------------------------------------------------------
   ##-----------------------------------------------------------------------------------------------
   ## This function sorts samples by either interquartile range or number of probes called as detected.
@@ -236,7 +237,7 @@ setMethod("sampleQC",signature(data.obj="LumiBatch"),
           function(data.obj, logtransform, goby, xaxis, QCmeasure,
                    cor.to, pseudochip.samples, detectionTh, manualcutoff,
                    mincor, maxcor, below.smoothed.threshold, lowess.f,
-                   labelnote, pch,lw, linecol, make.legend, main.title ){
+                   labelnote, pch,lw, linecol, make.legend, main.title, ... ){
             ##
             expr.dat <- exprs(data.obj)
             if("ndetectedprobes" %in% QCmeasure){
@@ -249,17 +250,16 @@ setMethod("sampleQC",signature(data.obj="LumiBatch"),
                      detectionTh, manualcutoff, mincor, maxcor,
                      below.smoothed.threshold, lowess.f,
                      labelnote=labelnote, pch, lw, linecol,
-                     make.legend
-                     )
+                     make.legend, ... )
           }
           )
 
 
-setMethod("sampleQC",signature(data.obj="ExpressionSet"),
+setMethod("sampleQC",signature(data.obj="AffyBatch"),
           function(data.obj, logtransform, goby, xaxis, QCmeasure,
                    cor.to, pseudochip.samples, detectionTh, manualcutoff,
                    mincor, maxcor, below.smoothed.threshold, lowess.f,
-                   labelnote, pch,lw, linecol, make.legend, main.title ){
+                   labelnote, pch,lw, linecol, make.legend, main.title, ... ){
             ##
             expr.dat <- exprs(data.obj)
             if("ndetectedprobes" %in% QCmeasure)
@@ -269,6 +269,6 @@ setMethod("sampleQC",signature(data.obj="ExpressionSet"),
                      detectionTh, manualcutoff, mincor, maxcor,
                      below.smoothed.threshold, lowess.f,
                      labelnote=labelnote, pch, lw, linecol,
-                     make.legend )
+                     make.legend, ... )
           }
           )

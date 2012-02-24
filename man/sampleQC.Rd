@@ -1,5 +1,9 @@
 \name{sampleQC}
 \alias{sampleQC}
+\alias{sampleQC-method}
+\alias{sampleQC,matrix-method}
+\alias{sampleQC,AffyBatch-method}
+\alias{sampleQC,LumiBatch-method}
 
 \title{
 
@@ -25,7 +29,10 @@
 
 \usage{
 
-sampleQC(data.obj,logtransform = TRUE, goby = 3, xaxis = c("index", "notindex"), QCmeasure = c("IQR", "ndetectedprobes"), cor.to = c("similar", "pseudochip"), pseudochip.samples = 1:ncol(data.obj), detectionTh = 0.01, manualcutoff = NULL, mincor = 0, maxcor = 0.8, below.smoothed.threshold = 1.5, lowess.f = 1/3, labelnote = NULL, pch = 1, lw = 4, linecol = "red", make.legend = TRUE, main.title = NA, ...)
+sampleQC(data.obj,logtransform = TRUE, goby = 3, xaxis = "notindex", QCmeasure = "IQR", cor.to = "pseudochip", pseudochip.samples = 1:ncol(data.obj), detectionTh = 0.01, manualcutoff = NULL, mincor = 0, maxcor = 0.8, below.smoothed.threshold = 1.5, lowess.f = 1/3, labelnote = NULL, pch = 1, lw = 4, linecol = "red", make.legend = TRUE, main.title = NA, ...)
+       \S4method{sampleQC}{LumiBatch}(data.obj,logtransform = TRUE, goby = 3, xaxis = "notindex", QCmeasure = "IQR", cor.to = "pseudochip", pseudochip.samples = 1:ncol(data.obj), detectionTh = 0.01, manualcutoff = NULL, mincor = 0, maxcor = 0.8, below.smoothed.threshold = 1.5, lowess.f = 1/3, labelnote = NULL, pch = 1, lw = 4, linecol = "red", make.legend = TRUE, main.title = NA, ...)
+       \S4method{sampleQC}{AffyBatch}(data.obj,logtransform = TRUE, goby = 3, xaxis = "notindex", QCmeasure = "IQR", cor.to = "pseudochip", pseudochip.samples = 1:ncol(data.obj), detectionTh = 0.01, manualcutoff = NULL, mincor = 0, maxcor = 0.8, below.smoothed.threshold = 1.5, lowess.f = 1/3, labelnote = NULL, pch = 1, lw = 4, linecol = "red", make.legend = TRUE, main.title = NA, ...)
+       \S4method{sampleQC}{matrix}(data.obj,logtransform = TRUE, goby = 3, xaxis = "notindex", QCmeasure = "IQR", cor.to = "pseudochip", pseudochip.samples = 1:ncol(data.obj), detectionTh = 0.01, manualcutoff = NULL, mincor = 0, maxcor = 0.8, below.smoothed.threshold = 1.5, lowess.f = 1/3, labelnote = NULL, pch = 1, lw = 4, linecol = "red", make.legend = TRUE, main.title = NA, ...)
 
 }
 
